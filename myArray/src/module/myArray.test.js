@@ -103,7 +103,7 @@ describe('test custom class Array', () => {
 
     test('call times should be 2', () => {
       const arr = new MyArray(1, 2);
-      const mockCallback = jest.fn(x => 42 + x);
+      const mockCallback = jest.fn(x => x);
       arr.forEach(mockCallback);
       expect(mockCallback.mock.calls.length).toBe(2);
     });

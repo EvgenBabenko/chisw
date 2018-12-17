@@ -1,6 +1,12 @@
 const { bubbleSort, quickSort } = require('../utils/sortAlgorithms');
 const { checkFnArgs } = require('../helpers/index');
 
+function* iteratebleObject(object, length) {
+  for (let i = 0; i < length; i++) {
+    yield object[i];
+  }
+}
+
 function MyArray() {
   for (let i = 0; i < arguments.length; i++) {
     this[i] = arguments[i];
@@ -9,23 +15,7 @@ function MyArray() {
   this.length = arguments.length;
 }
 
-MyArray.prototype[Symbol.iterator] = function () {
-  let index = 0;
-  const self = this;
-
-  return {
-    next() {
-      let value = self[index];
-      let done = index === self.length;
-      index += 1;
-
-      return {
-        value,
-        done,
-      }
-    }
-  }
-}
+MyArray.prototype[Symbol.iterator] = function* () { yield* iteratebleObject(this, this.length) }
 
 MyArray.prototype.push = function () {
   checkFnArgs({ this: this });
@@ -63,14 +53,7 @@ MyArray.prototype.forEach = function (cb) {
 MyArray.prototype.map = function (cb, thisArg) {
   checkFnArgs({ this: this, cb });
 
-  const instance = new MyArray();
-  instance.length = this.length;
-
-  for (let i = 0; i < this.length; i++) {
-    instance[i] = cb.call(thisArg, this[i], i, this);
-  }
-
-  return instance;
+  return MyArray.from({length: this.length}, (v, k) => cb.call(thisArg, this[k], k, this));
 }
 
 MyArray.prototype.filter = function (cb, thisArg) {
@@ -78,13 +61,10 @@ MyArray.prototype.filter = function (cb, thisArg) {
 
   const instance = new MyArray();
 
-  let index = 0;
-
   for (let i = 0; i < this.length; i++) {
     if (cb.call(thisArg, this[i], i, this)) {
-      instance[index] = this[i];
+      instance[instance.length] = this[i];
       instance.length += 1;
-      index += 1;
     }
   }
 
@@ -95,7 +75,6 @@ MyArray.prototype.reduce = function (cb, initialValue) {
   checkFnArgs({ this: this, cb })
 
   for (let i = 0; i < this.length; i++) {
-    debugger
     initialValue = initialValue ? cb(initialValue, this[i], i, this) : this[i];
   }
 
@@ -131,25 +110,17 @@ MyArray.from = function (arrayLike, mapFn, thisArg) {
 
   const instance = new MyArray()
 
-  const length = arrayLike.size ? arrayLike.size : arrayLike.length;
+  instance.length = arrayLike.size ? arrayLike.size : arrayLike.length;
+
+  const items = arrayLike.size || typeof arrayLike === 'string'
+    ? arrayLike
+    : iteratebleObject(arrayLike, instance.length)
 
   let i = 0;
 
-  if (arrayLike.size) {
-    for (let item of arrayLike) {
-      instance[i] = mapFn ? mapFn.call(thisArg, item, i) : item;
-      i += 1
-    };
-  } else {
-    while (i < length) {
-      const item = arrayLike[i];
-
-      instance[i] = mapFn ? mapFn.call(thisArg, item, i) : item
-      i += 1
-    }
+  for (let item of items) {
+    instance[i] = mapFn ? mapFn.call(thisArg, item, i) : item, i += 1
   }
-
-  instance.length = length
 
   return instance;
 }
