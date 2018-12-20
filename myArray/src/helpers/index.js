@@ -1,4 +1,4 @@
-fnArgsMap = {
+const fnArgsMap = {
   this: (self) => {
     if (self === null) {
       throw new TypeError('this is null or not defined');
