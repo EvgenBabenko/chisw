@@ -8,11 +8,15 @@ function* iteratebleObject(object, length) {
 }
 
 function MyArray() {
-  for (let i = 0; i < arguments.length; i++) {
-    this[i] = arguments[i];
+  const hasOneArg = typeof arguments[0] === 'number' && arguments.length === 1;
+
+  const length = hasOneArg ? arguments[0] : arguments.length
+
+  for (let i = 0; i < length; i++) {
+    this[i] = hasOneArg ? undefined : arguments[i];
   }
 
-  this.length = arguments.length;
+  this.length = length
 }
 
 MyArray.prototype[Symbol.iterator] = function* () { yield* iteratebleObject(this, this.length) }
@@ -53,7 +57,7 @@ MyArray.prototype.forEach = function (cb) {
 MyArray.prototype.map = function (cb, thisArg) {
   checkFnArgs({ this: this, cb });
 
-  return MyArray.from({length: this.length}, (v, k) => cb.call(thisArg, this[k], k, this));
+  return MyArray.from({ length: this.length }, (v, k) => cb.call(thisArg, this[k], k, this));
 }
 
 MyArray.prototype.filter = function (cb, thisArg) {
@@ -85,6 +89,8 @@ MyArray.prototype.toString = function () {
   checkFnArgs({ this: this })
 
   let string = '';
+
+  if (this.length === 0) return string;
 
   for (let i = 0; i < this.length; i++) {
     string += i === this.length - 1 ? this[i] : `${this[i]},`;
