@@ -1,0 +1,63 @@
+body {
+  background-color: black;
+  color: #0F0;
+  font-family: 'Consolas', monospace;
+}
+
+header {
+  text-align: center;
+}
+
+#status {
+  color: red;
+}
+
+#messages {
+  margin-left: 1em;
+  padding: 0em 2.5em;
+  list-style: none;
+  height: 200px;
+  overflow-y: auto;
+  word-wrap: break-word;
+}
+
+#form {
+  display: flex;
+}
+
+input, label {
+  display: block;
+  font-size: 1.5em;
+  padding: 1em .5em;
+}
+
+input {
+  flex: 1;
+  outline: none;
+  border: none;
+  background-color: black;
+  color: #0F0;
+  font-family: 'Consolas', monospace;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #0F0; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #b30000; 
+}
