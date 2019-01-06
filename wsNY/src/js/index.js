@@ -1,50 +1,59 @@
 import config from '../config';
-import Matrix from './Matrix/Matrix';
+import NuclearStation from './NuclearStation/NuclearStation';
 import { printMessage } from './helpers/domHelpers';
-import { constants } from './constants';
 
-const status = document.getElementById('status');
-const messages = document.getElementById('messages');
-const form = document.getElementById('form');
-const input = document.getElementById('input');
+const statusDom = document.getElementById('status');
+const messagesDom = document.getElementById('messages');
+const formDom = document.getElementById('form');
+const inputDom = document.getElementById('input');
 
-const DOMElements = {
-  status,
-  messages,
+const domElements = {
+  statusDom,
+  messagesDom,
 };
 
 let isConnecting = false;
 
-const matrix = new Matrix(config.API_HOST, DOMElements);
+const host = config.API_HOST;
 
-const connect = async () => {
-  printMessage(messages, `Connecting to server ${config.API_HOST}...`);
+const nuclearStation = new NuclearStation(host, domElements);
 
-  matrix.connect();
-  isConnecting = true;
-};
-
-const hack = async () => {
-  if (!isConnecting) {
-    printMessage(messages, 'no server connection');
+const connectServer = () => {
+  if (isConnecting) {
+    printMessage(messagesDom, 'Station already running');
 
     return;
   }
 
-  printMessage(messages, 'start hacking system');
-  matrix.message();
+  printMessage(messagesDom, `Connecting to station ${host}...`);
+
+  nuclearStation.connect();
+
+  isConnecting = true;
 };
 
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
+const hackSystem = () => {
+  if (!isConnecting) {
+    printMessage(messagesDom, 'no station connection');
 
-  if (input.value === constants.connect) {
-    await connect();
-  } else if (input.value === constants.hack) {
-    hack();
-  } else {
-    printMessage(messages, 'unknown command');
+    return;
   }
 
-  input.value = '';
+  printMessage(messagesDom, 'start shootdown system');
+
+  nuclearStation.message();
+};
+
+formDom.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  if (inputDom.value === 'connect') {
+    connectServer();
+  } else if (inputDom.value === 'hack') {
+    hackSystem();
+  } else {
+    printMessage(messagesDom, 'unknown command');
+  }
+
+  inputDom.value = '';
 });

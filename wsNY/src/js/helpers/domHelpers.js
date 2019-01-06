@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
-import { colorMap } from '../constants';
+import { statusColorMap } from '../constants';
 
-const updateScroll = (element) => {
-  element.scrollTop = element.scrollHeight;
+const updateScroll = (node) => {
+  node.scrollTop = node.scrollHeight;
 };
 
-export const printMessage = (element, value, idAttr) => {
+export const printMessage = (node, value, idAttr) => {
   const li = document.createElement('li');
 
   if (idAttr) {
@@ -13,11 +13,11 @@ export const printMessage = (element, value, idAttr) => {
   }
 
   li.innerHTML = value;
-  element.appendChild(li);
-  updateScroll(element);
+  node.appendChild(li);
+  updateScroll(node);
 };
 
-export const setStatus = (element, value = 'default') => {
-  element.innerHTML = value;
-  element.style.color = colorMap[value];
+export const setStatus = (node, value = 'default') => {
+  node.innerHTML = value;
+  node.style.color = statusColorMap[value];
 };
