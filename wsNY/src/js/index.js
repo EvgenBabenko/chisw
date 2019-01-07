@@ -1,59 +1,71 @@
 import config from '../config';
-import NuclearStation from './NuclearStation/NuclearStation';
-import { printMessage } from './helpers/domHelpers';
+import NuclearStation from './nuclearStation';
+import { constants } from './constants';
+import Cli from './cli';
 
 const statusDom = document.getElementById('status');
-const messagesDom = document.getElementById('messages');
-const formDom = document.getElementById('form');
-const inputDom = document.getElementById('input');
-
-const domElements = {
-  statusDom,
-  messagesDom,
-};
 
 let isConnecting = false;
 
-const host = config.API_HOST;
+const HOST = config.API_HOST;
 
-const nuclearStation = new NuclearStation(host, domElements);
+const cli = new Cli();
+
+const nuclearStation = new NuclearStation(statusDom, cli);
+
+// cliCommands(cli, nuclearStation);
 
 const connectServer = () => {
   if (isConnecting) {
-    printMessage(messagesDom, 'Station already running');
+    cli.printMessage('Station already running');
 
     return;
   }
 
-  printMessage(messagesDom, `Connecting to station ${host}...`);
+  cli.printMessage(`Connecting to station ${HOST}...`);
 
-  nuclearStation.connect();
+  nuclearStation.connect(HOST);
 
   isConnecting = true;
 };
 
+const closeServer = () => {
+  isConnecting = false;
+  nuclearStation.disconnect(cli);
+};
+
 const hackSystem = () => {
   if (!isConnecting) {
-    printMessage(messagesDom, 'no station connection');
+    cli.printMessage('no station connection');
 
     return;
   }
 
-  printMessage(messagesDom, 'start shootdown system');
+  cli.printMessage('start shootdown system');
 
-  nuclearStation.message();
+  nuclearStation.message(cli);
 };
 
-formDom.addEventListener('submit', (event) => {
-  event.preventDefault();
+const clearAll = () => {
+  cli.clearAll();
+};
 
-  if (inputDom.value === 'connect') {
-    connectServer();
-  } else if (inputDom.value === 'hack') {
-    hackSystem();
-  } else {
-    printMessage(messagesDom, 'unknown command');
+const reloadServer = () => {
+  if (statusDom.innerText === constants.CONECTED) {
+    closeServer();
   }
 
-  inputDom.value = '';
-});
+  clearAll();
+
+  connectServer();
+};
+
+const cliCommands = {
+  connect: () => connectServer(),
+  close: () => closeServer(),
+  hack: () => hackSystem(),
+  reload: () => reloadServer(),
+  clear: () => clearAll(),
+};
+
+cli.init(cliCommands);
