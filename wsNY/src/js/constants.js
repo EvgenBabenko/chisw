@@ -2,14 +2,11 @@ export const constants = {
   LEVERS_LENGTH: 4,
   CONECTED: 'CONECTED',
   DISCONECTED: 'DISCONECTED',
-  poweredOn: 'poweredOn',
-  poweredOff: 'poweredOff',
-  check: 'check',
-  hack: 'hack',
-  connect: 'connect',
+  POWERED_ON: 'poweredOn',
+  POWERED_OFF: 'poweredOff',
 };
 
-export const colorMap = {
+export const statusColorMap = {
   [constants.CONECTED]: '#0F0',
   [constants.DISCONECTED]: 'red',
   default: 'white',
