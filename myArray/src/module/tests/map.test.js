@@ -1,6 +1,9 @@
 const MyArray = require('../myArray');
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ee46a1607bf521349678a60f811e3bd564fa61c5
 describe('tests for method map', () => {
   test('instance has method map', () => {
     const arr = new MyArray(1, 4, 0);
