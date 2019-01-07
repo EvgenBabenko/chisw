@@ -1,9 +1,12 @@
 import { nextIndex } from '../utils/index';
+import config from '../../config';
+
+const { LEVERS_LENGTH } = config;
 
 export const checkActionCreator = (stateId, pulled) => ({
   action: 'check',
   lever1: pulled,
-  lever2: nextIndex(pulled),
+  lever2: nextIndex(pulled, LEVERS_LENGTH),
   stateId,
 });
 

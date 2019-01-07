@@ -1,36 +1,35 @@
-import { prevIndex } from '../utils';
-import { checkActionCreator, powerOffActionCreator } from '../helpers/actionCreators';
-import { setStatus, printMessage } from '../helpers/domHelpers';
-import { constants } from '../constants';
+import { prevIndex } from './utils';
+import { checkActionCreator, powerOffActionCreator } from './helpers/actionCreators';
+import { setStatus } from './helpers/domHelpers';
+import { constants } from './constants';
+import config from '../config';
+
+const {
+  CONECTED, DISCONECTED, POWERED_ON, POWERED_OFF,
+} = constants;
+const { LEVERS_LENGTH } = config;
 
 class NuclearStation {
-  constructor(API_HOST, domElements) {
-    this.domElements = domElements;
-    this.API_HOST = API_HOST;
-    this.currentState = null;
+  constructor(statusDom, cli) {
+    this.statusDom = statusDom;
+    this.cli = cli;
     this.pulled = null;
-    this.leversState = [false, false, false, false];
+    this.leversState = Array.from({ length: LEVERS_LENGTH }, (v, k) => k).fill(false);
     this.isWrongLeversState = false;
     this.initTimer = null;
     this.timerDOM = null;
   }
 
-  connect() {
-    const { statusDom } = this.domElements;
-    const { CONECTED } = constants;
-
-    this.socket = new WebSocket(this.API_HOST);
-    this.socket.onopen = () => setStatus(statusDom, CONECTED);
+  connect(API_HOST) {
+    this.socket = new WebSocket(API_HOST);
+    this.socket.onopen = () => setStatus(this.statusDom, CONECTED);
   }
 
   disconnect() {
-    const { statusDom, messagesDom } = this.domElements;
-    const { DISCONECTED } = constants;
-
     this.socket.close();
 
-    setStatus(statusDom, DISCONECTED);
-    printMessage(messagesDom, 'disconected');
+    setStatus(this.statusDom, DISCONECTED);
+    this.cli.printMessage('disconected');
   }
 
   message() {
@@ -69,16 +68,13 @@ class NuclearStation {
   }
 
   _checkNewState({ token, newState }) {
-    const { statusDom, messagesDom } = this.domElements;
-    const { POWERED_ON, POWERED_OFF, DISCONECTED } = constants;
-
     if (newState === POWERED_ON) {
       this.isWrongLeversState = true;
     }
 
     if (newState === POWERED_OFF) {
-      setStatus(statusDom, DISCONECTED);
-      printMessage(messagesDom, `token: ${token}`);
+      setStatus(this.statusDom, DISCONECTED);
+      this.cli.printMessage(`token: ${token}`);
       this.disconnect();
     }
   }
@@ -88,7 +84,7 @@ class NuclearStation {
       this._changeStateLever(this.pulled);
     } else {
       this.leversState[this.pulled] = same;
-      this._changeStateLever(prevIndex(this.pulled));
+      this._changeStateLever(prevIndex(this.pulled, LEVERS_LENGTH));
     }
 
     this._checkPowerOff(stateId);
@@ -104,19 +100,18 @@ class NuclearStation {
     }
   }
 
-  async _sendReq(req) {
+  _sendReq(req) {
     this.socket.send(JSON.stringify(req));
   }
 
   _updateTimer() {
-    const { messagesDom } = this.domElements;
     const timer = (new Date() - this.initTimer) / 1000;
     const timerTemplate = `hacked system in ${timer}s`;
 
     if (this.timerDOM) {
       this.timerDOM.innerHTML = timerTemplate;
     } else {
-      printMessage(messagesDom, timerTemplate, 'timer');
+      this.cli.printMessage(timerTemplate, 'timer');
     }
 
     this.timerDOM = this.timerDOM || document.getElementById('timer');
