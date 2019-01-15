@@ -70,7 +70,7 @@ describe('tests for method filter', () => {
 
   test('if custom context does not provided, use current context', () => {
     const arr = new MyArray(1, 4, 0);
-    const testArr = new MyArray();
+    const testArr = [];
     const user = {
       name: 'ivan',
       testFilter () {
@@ -80,7 +80,7 @@ describe('tests for method filter', () => {
 
     user.testFilter();
 
-    expect([...testArr]).toEqual(['ivan', 'ivan', 'ivan']);
+    expect(testArr).toEqual(['ivan', 'ivan', 'ivan']);
   });
 
   test('thisArg is set as -this- of callbackFunction properly for filter method', () => {

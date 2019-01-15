@@ -1,4 +1,4 @@
-import { nextIndex } from '../utils/index';
+import { nextIndex } from '../utils/changeIndex';
 import config from '../../config';
 
 const { LEVERS_LENGTH } = config;
