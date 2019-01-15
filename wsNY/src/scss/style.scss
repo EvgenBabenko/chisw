@@ -1,7 +1,11 @@
-body {
+@mixin main-text-color {
   background-color: black;
   color: #0F0;
   font-family: 'Consolas', monospace;
+}
+
+body {
+  @include main-text-color;
 }
 
 header {
@@ -35,9 +39,7 @@ input {
   flex: 1;
   outline: none;
   border: none;
-  background-color: black;
-  color: #0F0;
-  font-family: 'Consolas', monospace;
+  @include main-text-color;
 }
 
 /* width */

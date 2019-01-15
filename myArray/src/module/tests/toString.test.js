@@ -17,11 +17,7 @@ describe('tests for method toString', () => {
   });
 
   test('the toString result of empty arr must be an empty string and not undefined', () => {
-<<<<<<< HEAD
-    arr = new MyArray();
-=======
     arr = new MyArray(0);
->>>>>>> ee46a1607bf521349678a60f811e3bd564fa61c5
 
     expect(arr.toString()).toBe('');
     expect(arr.toString()).not.toBeUndefined();

@@ -6,18 +6,22 @@ const fnArgsMap = {
   },
   cb: (cb) => {
     if (typeof cb !== 'function') {
-      throw new TypeError(cb + ' is not a function');
+      throw new TypeError(`${cb} is not a function`);
     }
   },
   arrayLike: (arrayLike) => {
     if (arrayLike === null) {
       throw new TypeError('requires an array-like object - not null or undefined');
     }
-  }
-}
+  },
+};
 
-const checkFnArgs = (fnArgs) => Object.keys(fnArgs).forEach(key => { fnArgsMap[key](fnArgs[key]) })
+const checkFnArgs = fnArgs => Object
+  .keys(fnArgs)
+  .forEach((key) => {
+    fnArgsMap[key](fnArgs[key]);
+  });
 
 module.exports = {
   checkFnArgs,
-}
+};
